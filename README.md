@@ -5,18 +5,45 @@
 
 본 프로젝트에서는 **Android View**와 **Jetpack Compose** 두 가지 환경 모두에서 동일한 필터 로직을 구현하였으며, 기능 구현에 집중하여 작성되었습니다.
 
-### 1. 필터 구조
+### 1. 전체 구조
+
+- **구현 방식**
+  - `View`, `ViewModel`만 구현하여 역할을 분리함
+  - `View`는 **UI를 보여주는 역할**, `ViewModel`은 **상태를 저장하고 업데이트하는 역할**을 담당
+- **상태 관리**
+  - 화면에 존재하는 상태를 **단일 상태(`MainUiState`)**로 정의
+  - 상태 변경 시 `copy()`를 통해 **불변 객체**로 업데이트
+- **흐름**
+  1. 사용자가 버튼을 토글  
+  2. `ViewModel`에서 Update 과정을 거쳐 상태 업데이트  
+  3. `View`에서 상태를 옵저빙하여 UI에 반영  
+
+```kotlin
+data class MainUiState(
+    val isGray: Boolean,
+    val isBright: Boolean,
+    val isReverted: Boolean,
+    val grayScaleColorMatrix: ColorMatrix,
+    val brightnessColorMatrix: ColorMatrix,
+    val colorMatrix: ColorMatrix,
+    val cachedIsGray: Boolean,
+    val cachedIsBright: Boolean,
+    val cachedColorMatrix: ColorMatrix
+)
+```
+
+### 2. 필터 구현 방식
 - 흑백(ColorMatrix)과 밝기(ColorMatrix)를 `concat`하여 최종 `ColorMatrix`를 생성
 - 생성된 `ColorMatrix`를 `ImageView` 또는 `Compose Image`에 `colorFilter`로 적용
 
 
-### 2. 흑백 모드 전환
+### 3. 흑백 모드 전환
 - `saturation`(채도) 값을 기반으로 **흑백 행렬** 생성
   - `saturation = 0f` → 모든 색상을 **회색조(Grayscale)** 로 변환
   - 변환 시 RGB 행에는 고정 계수(`0.213, 0.715, 0.072`)가 적용됨
   
 
-### 3. 밝기 모드 전환
+### 4. 밝기 모드 전환
 - **Offset 값 변경**을 통해 밝기 변환 행렬 생성
   - 기존 `ColorMatrix`의 offset 값을 변경하여 밝기 조절
   - `values[4]`, `values[9]`, `values[14]`를 통해 밝기 값만 변경
@@ -63,6 +90,10 @@
 - **프리셋 추천 기준**
   - 사용자에게 필터 프리셋을 추천할 때, 어떤 요소(색감, 대비, 채도, 특정 톤 등)를 기준으로 추천하는지 궁금합니다.
   - 추천 알고리즘은 어떻게 구현되었는지도 궁금합니다.
+
+- **최소 버전 설정 이유**
+  - 요구사항에서는 최소 버전을 21이상으로 설정했는데 그 이유가 궁금합니다.
+  - 조사를 해보니 ColorFilter와 관련된 하드웨어 가속과 관련이 있을 수도 있다(?)는 내용도 있는데 정확한 의도가 궁금합니다  
 
 ---
 
