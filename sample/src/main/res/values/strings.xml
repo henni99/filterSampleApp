@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">RetricaSampleApp</string>
+
+    <!-- Gray -->
+    <string name="gray_apply">흑백 적용</string>
+    <string name="gray_remove">흑백 해제</string>
+
+    <!-- Bright -->
+    <string name="bright_increase">밝기 증가</string>
+    <string name="bright_decrease">밝기 감소</string>
+
+    <!-- Reset -->
+    <string name="reset_revert">되돌리기</string>
+    <string name="reset_restore">복원하기</string>
 </resources>

@@ -1,25 +1,17 @@
 package com.retrica.sample
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.get
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.drawToBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.retrica.sample.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
-import androidx.core.graphics.createBitmap
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,14 +28,15 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-
-                    println("colorMatrix: ${state.colorMatrix.array.toList()}")
                     render(state)
                 }
             }
         }
     }
 
+    /**
+     * 화면 UI를 초기화하고 시스템 바 여백 적용
+     */
     private fun initializeView() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -56,31 +49,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 버튼 클릭 리스너 초기화
+     * - btnGray: 흑백 토글
+     * - btnBright: 밝기 토글
+     * - btnReset: 원래 상태로 되돌리기
+     */
     fun initializeClickListener() = with(binding) {
         btnGray.setOnClickListener { viewModel.toggleGrayScale() }
         btnBright.setOnClickListener { viewModel.toggleBrightness() }
         btnReset.setOnClickListener { viewModel.reset() }
     }
 
+    /**
+     * ViewModel에서 전달받은 상태를 기반으로 UI 요소를 업데이트
+     *
+     * @param state 현재 UI 상태(MainUiState)
+     */
     fun render(state: MainUiState) = with(binding) {
+        val ctx = root.context
 
+        // 현재 적용된 필터 상태 계산 (isReverted에 따라 실제 적용 상태 결정)
+        val isGrayNow = if (state.isReverted) state.cachedIsGray else state.isGray
+        val isBrightNow = if (state.isReverted) state.cachedIsBright else state.isBright
+
+        // Gray 버튼 상태 및 텍스트 변경
         btnGray.isEnabled = !state.isReverted
-        btnGray.text = if (state.isReverted) {
-            if (state.cachedIsGray) "흑백 해제" else "흑백 적용"
-        } else {
-            if (state.isGray) "흑백 해제" else "흑백 적용"
-        }
+        btnGray.text = ctx.getString(
+            if (isGrayNow) R.string.gray_remove else R.string.gray_apply
+        )
 
+        // Bright 버튼 상태 및 텍스트 변경
         btnBright.isEnabled = !state.isReverted
-        btnBright.text = if (state.isReverted) {
-            if (state.cachedIsBright) "밝기 감소" else "밝기 증가"
-        } else {
-            if (state.isBright) "밝기 감소" else "밝기 증가"
-        }
+        btnBright.text = ctx.getString(
+            if (isBrightNow) R.string.bright_decrease else R.string.bright_increase
+        )
 
-        btnReset.text = if (state.isReverted) "복원하기" else "되돌리기"
+        // Reset 버튼 텍스트 변경
+        btnReset.text = ctx.getString(
+            if (state.isReverted) R.string.reset_restore else R.string.reset_revert
+        )
 
-        val filter = ColorMatrixColorFilter(state.colorMatrix)
-        imageView.colorFilter = filter
+        // 이미지에 ColorMatrix 필터 적용
+        imageView.colorFilter = ColorMatrixColorFilter(state.colorMatrix)
     }
 }
