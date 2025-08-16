@@ -17,7 +17,14 @@ class MainViewModel : ViewModel() {
     val uiState: StateFlow<MainComposeUiState>
         get() = _uiState.asStateFlow()
 
-
+    /**
+     * 흑백(그레이스케일) 필터를 토글하는 함수
+     *
+     * - 현재 isGray 상태를 반전시킴
+     * - 흑백 적용 시 ColorMatrix의 채도를 0으로 설정
+     * - 해제 시 채도를 1로 복원
+     * - 기존 밝기(ColorMatrix) 값과 합성하여 최종 colorMatrix를 갱신
+     */
     fun toggleGrayScale() = viewModelScope.launch {
         _uiState.update { state ->
 
@@ -37,6 +44,14 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    /**
+     * 밝기 필터를 토글하는 함수
+     *
+     * - 현재 isBright 상태를 반전시킴
+     * - 밝기 증가 시 RGB 채널 offset을 +50 적용
+     * - 밝기 해제 시 offset을 0으로 초기화
+     * - 기존 흑백(ColorMatrix) 값과 합성하여 최종 colorMatrix를 갱신
+     */
     fun toggleBrightness() = viewModelScope.launch {
         _uiState.update { state ->
 
@@ -59,10 +74,17 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    /**
+     * 현재 적용된 필터 상태를 초기화하거나 복원하는 함수
+     *
+     * - state.isReverted == true 이면: 저장된 캐시(cachedIsGray, cachedIsBright, cachedColorMatrix)로 복원
+     * - state.isReverted == false 이면: 현재 필터 상태를 캐시에 저장 후 초기화
+     * - 캐시를 이용해 복원/초기화를 반복할 수 있음
+     */
     fun reset() = viewModelScope.launch {
         _uiState.update { state ->
 
-            if (state.isReverted) { // 필터 적용 이전으로 되돌린 상태일 경우
+            if (state.isReverted) {
                 state.copy(
                     isReverted = false,
                     isGray = state.cachedIsGray,
@@ -72,7 +94,7 @@ class MainViewModel : ViewModel() {
                     cachedIsBright = false,
                     cachedColorMatrix = ColorMatrix()
                 )
-            } else { // 필터 적용 이전으로 되돌린 상태가 아닐 경우
+            } else {
                 state.copy(
                     isReverted = true,
                     isGray = false,
@@ -87,6 +109,12 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    /**
+     * 여러 ColorMatrix를 순서대로 곱하여 하나의 ColorMatrix로 합성하는 함수
+     *
+     * @param matrices 합성할 ColorMatrix의 values 배열(최대 5x4, length=20)
+     * @return 합성된 ColorMatrix
+     */
     private fun makeColorMatrix(vararg matrices: FloatArray): ColorMatrix {
         return ColorMatrix().apply {
             matrices.forEach { timesAssign(ColorMatrix(it)) }
@@ -120,29 +148,5 @@ data class MainComposeUiState(
             cachedIsBright = false,
             cachedColorMatrix = ColorMatrix()
         )
-    }
-}
-
-
-
-fun ColorMatrix.withBrightnessOffset(offset: Float): ColorMatrix {
-    val newMatrix = ColorMatrix()
-    newMatrix.set(this)
-    val array = newMatrix.values
-    array[4] = offset
-    array[9] = offset
-    array[14] = offset
-    return ColorMatrix(array)
-}
-
-
-fun ColorMatrix.withSaturation(saturation: Float): ColorMatrix {
-    val offsets = floatArrayOf(values[4], values[9], values[14])
-
-    return ColorMatrix().apply {
-        setToSaturation(saturation)
-        values[4] = offsets[0]
-        values[9] = offsets[1]
-        values[14] = offsets[2]
     }
 }

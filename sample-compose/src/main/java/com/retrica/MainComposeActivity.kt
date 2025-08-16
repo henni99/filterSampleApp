@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter.Companion.colorMatrix
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -72,12 +73,12 @@ class MainComposeActivity : ComponentActivity() {
                                 if (state.isReverted) {
                                     Text(
                                         fontSize = 10.sp,
-                                        text = if (state.cachedIsGray) "흑백 해제" else "흑백 적용"
+                                        text = stringResource(if(state.cachedIsGray) R.string.gray_remove else R.string.gray_apply)
                                     )
                                 } else {
                                     Text(
                                         fontSize = 10.sp,
-                                        text = if (state.isGray) "흑백 해제" else "흑백 적용"
+                                        text = stringResource(if(state.isGray) R.string.gray_remove else R.string.gray_apply)
                                     )
                                 }
 
@@ -90,12 +91,12 @@ class MainComposeActivity : ComponentActivity() {
                                 if (state.isReverted) {
                                     Text(
                                         fontSize = 10.sp,
-                                        text = if (state.cachedIsBright) "밝기 해제" else "밝기 적용"
+                                        text = stringResource(if (state.cachedIsBright)R.string.bright_decrease else R.string.bright_increase)
                                     )
                                 } else {
                                     Text(
                                         fontSize = 10.sp,
-                                        text = if (state.isBright) "밝기 해제" else "밝기 적용"
+                                        text = stringResource(if (state.isBright)R.string.bright_decrease else R.string.bright_increase)
                                     )
                                 }
                             }
