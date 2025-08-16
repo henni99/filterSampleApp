@@ -11,7 +11,7 @@
   - `View`, `ViewModel`만 구현하여 역할을 분리함
   - `View`는 **UI를 보여주는 역할**, `ViewModel`은 **상태를 저장하고 업데이트하는 역할**을 담당
 - **상태 관리**
-  - 화면에 존재하는 상태를 **단일 상태(`MainUiState`)**로 정의
+  - 화면에 존재하는 상태를 단일 상태(`MainUiState`)로 정의
   - 상태 변경 시 `copy()`를 통해 **불변 객체**로 업데이트
 - **흐름**
   1. 사용자가 버튼을 토글  
@@ -45,8 +45,7 @@ data class MainUiState(
 
 ### 4. 밝기 모드 전환
 - **Offset 값 변경**을 통해 밝기 변환 행렬 생성
-  - 기존 `ColorMatrix`의 offset 값을 변경하여 밝기 조절
-  - `values[4]`, `values[9]`, `values[14]`를 통해 밝기 값만 변경
+  - 밝기 전용 `ColorMatrix`의 offset RGB 값(`values[4]`, `values[9]`, `values[14]`)을 변경하여 밝기 조절
 
 
 ### 4. 되돌리기 / 복원하기 기능 (이미지 비교만을 위한 목적)
@@ -54,7 +53,7 @@ data class MainUiState(
   - 이전 이미지 상태로 복원
   - 흑백/밝기 버튼 모두 비활성화
   - 현재 상태(`isGray`, `isBright`, `colorMatrix`)를  
-    `cachedIsGray`, `cachedIsBright`, `cachedColorMatrix`에 저장 후 현재 상태는 최초 상태로 리셋
+    `cachedIsGray`, `cachedIsBright`, `cachedColorMatrix`에 저장 후 현재 상태는 초기 상태로 리셋
 - **복원하기**
   - 캐시에 저장된 상태를 다시 현재 상태로 복원
   - 흑백/밝기 버튼 모두 활성화
@@ -162,7 +161,7 @@ data class MainUiState(
 
 ---
 
-## 작업 로그 (14시간)
+## 작업 로그 (12시간 30분)
 
 ### 2025.08.15
 - **13:00 ~ 15:00 (2시간)**  
@@ -173,7 +172,7 @@ data class MainUiState(
   - README 추가 작업 진행
 
 ### 2025.08.16
-- **09:00 ~ 11:00 (2시간)**  
+- **09:00 ~ 11:30 (2시간 30분)**  
   - README 다듬기 및 문서 내용 추가, 코드 검수
-- **11:00 ~ 13:00 (2시간)**  
   - 버전별 테스트 및 업로드
+  
