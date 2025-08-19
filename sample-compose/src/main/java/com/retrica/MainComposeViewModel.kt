@@ -51,7 +51,7 @@ class MainViewModel : ViewModel() {
      * 밝기 필터를 토글하는 함수
      *
      * - 현재 isBright 상태를 토글시킴
-     * - 밝기 증가 시 RGB 채널 scale * 1.2, offset을 +50 적용
+     * - 밝기 증가 시 RGB 채널 scale * 1.2, offset을 +10 적용
      * - 밝기 해제 시 RGB 채널 scale * 1, offset을 0으로 초기화
      * - 기존 흑백(ColorMatrix) 값과 concat하여 최종 colorFilter를 갱신
      */
@@ -61,7 +61,7 @@ class MainViewModel : ViewModel() {
             val originGrayScaleColorMatrix = state.grayScaleColorMatrix
             val newBrightnessColorMatrix = lightingColorMatrix(
                 scale = if (state.isBright) 1f else 1.2f,
-                offset = if (state.isBright) 0f else 50f
+                offset = if (state.isBright) 0f else 10f
             )
 
             state.copy(
@@ -173,7 +173,7 @@ data class MainComposeUiState(
 ) {
     companion object {
         fun empty() = MainComposeUiState(
-            drawable = R.drawable.ic_launcher_foreground,
+            drawable = R.drawable.ic_launcher_background,
             isGray = false,
             isBright = false,
             isReverted = false,
