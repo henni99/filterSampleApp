@@ -1,6 +1,5 @@
 package com.retrica.sample
 
-import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -90,7 +89,8 @@ class MainActivity : AppCompatActivity() {
             if (state.isReverted) R.string.reset_restore else R.string.reset_revert
         )
 
-        // 이미지에 ColorMatrix 필터 적용
-        imageView.colorFilter = ColorMatrixColorFilter(state.colorMatrix)
+        // Image에 ColorFilter 필터 적용
+        imageView.colorFilter = state.colorFilter
+
     }
 }

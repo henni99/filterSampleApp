@@ -121,7 +121,7 @@ class MainComposeActivity : ComponentActivity() {
                                 .fillMaxSize(),
                             bitmap = bitmap,
                             contentDescription = null,
-                            colorFilter = colorMatrix(state.colorMatrix)
+                            colorFilter = state.colorFilter
                         )
                     }
                 )
