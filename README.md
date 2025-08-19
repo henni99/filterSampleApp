@@ -46,7 +46,7 @@ data class MainUiState(
 ### 4. 밝기 모드 전환
 - **Offset, Scale 값 변경**을 통해 밝기 변환 행렬 생성
   - 밝기 전용 `ColorMatrix`의 Offset, Scale RGB 값을 변경하여 밝기 조절
-
+  - 어두운 영역은 더 어둡게, 밝은 영역은 더 밝게 되면서 대비를 확대
 
 ### 4. 되돌리기 / 복원하기 기능 (이미지 비교만을 위한 목적)
 - **되돌리기**
@@ -69,7 +69,7 @@ data class MainUiState(
   - Compose 환경에서 기존 `ColorMatrix` 객체를 직접 변경하면, 동일 객체로 인식되어 리컴피조션이 발생하지 않는 문제가 있었음.
   - 해결: stable한 `ColorFilter` 인스턴스를 생성하여 상태를 갱신하도록 구현.
 
-- **`⚠️ setToSaturation` 사용 시 reset 문제**
+- **⚠️ `setToSaturation` 사용 시 reset 문제**
   - `setToSaturation`은 내부적으로 `reset()`을 호출하므로, 누적된 `ColorMatrix`에 적용시 적용 값들이 초기화됨.
   - 해결: 흑백 변경 전용 `ColorMatrix`를 별도로 생성하고, 기존 밝기 행렬과 `concat`하여 최종 `ColorMatrix` 변경.
 
