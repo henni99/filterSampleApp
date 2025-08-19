@@ -11,7 +11,7 @@
   - `View`, `ViewModel`만 구현하여 역할을 분리함
   - `View`는 **UI를 보여주는 역할**, `ViewModel`은 **상태를 저장하고 업데이트하는 역할**을 담당
 - **상태 관리**
-  - 화면에 존재하는 상태를 단일 상태(`MainUiState`)로 정의
+  - 화면에 존재하는 상태를 단일 상태(`MainUiState, MainComposeUiState`)로 정의
   - 상태 변경 시 `copy()`를 통해 **불변 객체**로 업데이트
 - **흐름**
   1. 사용자가 버튼을 토글  
@@ -25,16 +25,16 @@ data class MainUiState(
     val isReverted: Boolean,
     val grayScaleColorMatrix: ColorMatrix,
     val brightnessColorMatrix: ColorMatrix,
-    val colorMatrix: ColorMatrix,
+    val colorFilter: ColorFilter,
     val cachedIsGray: Boolean,
     val cachedIsBright: Boolean,
-    val cachedColorMatrix: ColorMatrix
+    val cachedColorFilter: ColorFilter
 )
 ```
 
 ### 2. 필터 구현 방식
 - 흑백(ColorMatrix)과 밝기(ColorMatrix)를 `concat`하여 최종 `ColorMatrix`를 생성
-- 생성된 `ColorMatrix`를 `ImageView` 또는 `Compose Image`에 `colorFilter`로 적용
+- 생성된 `ColorMatrix`를 `ColorFilter`로 변형 후 `ImageView` 또는 `Compose Image`에 적용
 
 
 ### 3. 흑백 모드 전환
@@ -44,20 +44,20 @@ data class MainUiState(
   
 
 ### 4. 밝기 모드 전환
-- **Offset 값 변경**을 통해 밝기 변환 행렬 생성
-  - 밝기 전용 `ColorMatrix`의 offset RGB 값(`values[4]`, `values[9]`, `values[14]`)을 변경하여 밝기 조절
+- **Offset, Scale 값 변경**을 통해 밝기 변환 행렬 생성
+  - 밝기 전용 `ColorMatrix`의 Offset, Scale RGB 값을 변경하여 밝기 조절
 
 
 ### 4. 되돌리기 / 복원하기 기능 (이미지 비교만을 위한 목적)
 - **되돌리기**
   - 이전 이미지 상태로 복원
   - 흑백/밝기 버튼 모두 비활성화
-  - 현재 상태(`isGray`, `isBright`, `colorMatrix`)를  
-    `cachedIsGray`, `cachedIsBright`, `cachedColorMatrix`에 저장 후 현재 상태는 초기 상태로 리셋
+  - 현재 상태(`isGray`, `isBright`, `colorFilter`)를  
+    `cachedIsGray`, `cachedIsBright`, `cachedColorFilter`에 저장 후 현재 상태는 초기 상태로 리셋
 - **복원하기**
   - 캐시에 저장된 상태를 다시 현재 상태로 복원
   - 흑백/밝기 버튼 모두 활성화
-  - `cachedIsGray`, `cachedIsBright`, `cachedColorMatrix`는 초기 상태로 리셋
+  - `cachedIsGray`, `cachedIsBright`, `cachedColorFilter`는 초기 상태로 리셋
 
 ---
 
@@ -65,21 +65,67 @@ data class MainUiState(
 
 ### 1. 구현 중 겪은 문제
 
-- **ColorMatrix 불변 객체 혼동**
-  - Compose 환경에서 기존 `ColorMatrix` 객체를 직접 변경하면, 동일 객체로 인식되어 재구성이 발생하지 않는 문제가 있었음.
-  - 해결: 새로운 `ColorMatrix` 인스턴스를 생성하여 상태를 갱신하도록 구현.
+- **⚠️ `ColorMatrix` 불변 객체 혼동**
+  - Compose 환경에서 기존 `ColorMatrix` 객체를 직접 변경하면, 동일 객체로 인식되어 리컴피조션이 발생하지 않는 문제가 있었음.
+  - 해결: stable한 `ColorFilter` 인스턴스를 생성하여 상태를 갱신하도록 구현.
 
-- **`setToSaturation` 사용 시 reset 문제**
+- **`⚠️ setToSaturation` 사용 시 reset 문제**
   - `setToSaturation`은 내부적으로 `reset()`을 호출하므로, 누적된 `ColorMatrix`에 적용시 적용 값들이 초기화됨.
   - 해결: 흑백 변경 전용 `ColorMatrix`를 별도로 생성하고, 기존 밝기 행렬과 `concat`하여 최종 `ColorMatrix` 변경.
 
-- **확장성 고려**
-  - 현재는 흑백, 밝기 조절만 구현했으나 향후 더 많은 옵션(예: 대비, 색상 회전 등) 추가 시 기존 변환 정보가 덮어씌워질 가능성이 있음.
-  - 해결: 각 효과별 `ColorMatrix` 변환 정보를 별도로 저장하고, 최종 적용 시 이를 `concat`하여 하나의 행렬로 합산하는 구조로 변경.
+- **⚠️ `ColorMatrix` 적용 방식에 따른 결과 차이**
+  - `ColorMatrix`를 여러 개 합성(`postConcat)`해서 사용하는 경우와, 각각의 `ColorMatrix` 따로 `ColorMatrixColorFilter`로 적용하는 경우 결과가 달라질 수 있음 (아래 예시)
 
-- **필터 적용 방식의 중요성**
-  - 매번 필터 적용 시 ColorMatrix는 **Clamp color range(0~255)** 처리가 발생하므로, 원치 않는 결과가 나올 수 있음.
-  - 해결: 개별 필터를 순차 적용하는 대신, 모든 변환 행렬을 미리 `concat`하여 한 번에 적용 → Clamp는 마지막에만 수행되어 원본 정보 보존 가능.
+---
+
+```kotlin
+val cm = ColorMatrix(
+    floatArrayOf(
+        1f, 0f, 0f, 0f, -255f,   // R - 255
+        0f, 1f, 0f, 0f, -255f,   // G - 255
+        0f, 0f, 1f, 0f, -255f,   // B - 255
+        0f, 0f, 0f, 1f,   0f     // A 그대로
+    )
+)
+
+cm.postConcat(
+    ColorMatrix(
+        floatArrayOf(
+            1f, 0f, 0f, 0f, 255f,   // R + 255
+            0f, 1f, 0f, 0f, 255f,   // G + 255
+            0f, 0f, 1f, 0f, 255f,   // B + 255
+            0f, 0f, 0f, 1f,   0f    // A 그대로
+        )
+    )
+)
+
+imageView.colorFilter = ColorMatrixColorFilter(cm)
+```
+
+```kotlin
+val cm1 = ColorMatrix(
+    floatArrayOf(
+        1f, 0f, 0f, 0f, -255f,
+        0f, 1f, 0f, 0f, -255f,
+        0f, 0f, 1f, 0f, -255f,
+        0f, 0f, 0f, 1f,   0f
+    )
+)
+
+imageView.colorFilter = ColorMatrixColorFilter(cm1)
+
+val cm2 = ColorMatrix(
+    floatArrayOf(
+        1f, 0f, 0f, 0f, -255f,
+        0f, 1f, 0f, 0f, -255f,
+        0f, 0f, 1f, 0f, -255f,
+        0f, 0f, 0f, 1f,   0f
+    )
+)
+imageView.colorFilter = ColorMatrixColorFilter(cm2)
+```
+
+  - 해결: 개별 필터를 Image에 순차 적용하는 대신, 모든 변환 행렬을 미리 `concat`하여 한 번에 적용
 
 ### 2. 질문 사항
 
@@ -92,7 +138,7 @@ data class MainUiState(
 
 - **최소 버전 설정 이유**
   - 요구사항에서는 최소 버전을 21이상으로 설정했는데 그 이유가 궁금합니다.
-  - 조사를 해보니 ColorFilter와 관련된 하드웨어 가속과 관련이 있을 수도 있다(?)는 내용도 있는데 정확한 의도가 궁금합니다  
+  - 조사를 해보니 21 버전 업데이트 문서에서 OpenGL 관련 업데이트는 있지만, 필터 관련 업데이트는 찾을 수 없기에 그 이유가 궁금합니다.
 
 ---
 
@@ -161,7 +207,7 @@ data class MainUiState(
 
 ---
 
-## 작업 로그 (12시간 30분)
+## 작업 로그 (12시간 30분 + 1시간 30분)
 
 ### 2025.08.15
 - **13:00 ~ 15:00 (2시간)**  
@@ -175,4 +221,10 @@ data class MainUiState(
 - **09:00 ~ 11:30 (2시간 30분)**  
   - README 다듬기 및 문서 내용 추가, 코드 검수
   - 버전별 테스트 및 업로드
+
+### 2025.08.19
+- **10:29 - 23:59 (1시간 30분)**  
+  - ColorMatrix -> ColorFilter 변경
+  - 밝기 조절 방식 변경
+  - README 수정
   
