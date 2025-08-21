@@ -78,16 +78,16 @@ class MainViewModel : ViewModel() {
     /**
      * 현재 적용된 필터 상태를 초기화하거나 복원하는 함수
      *
-     * - state.isReverted == true 이면: 저장된 캐시(cachedIsGray, cachedIsBright, cachedColorFilter)로 복원
-     * - state.isReverted == false 이면: 현재 필터 상태를 캐시에 저장 후 초기화
+     * - state.isRestored == true 이면: 저장된 캐시(cachedIsGray, cachedIsBright, cachedColorFilter)로 복원
+     * - state.isRestored == false 이면: 현재 필터 상태를 캐시에 저장 후 초기화
      * - 캐시를 이용해 복원/초기화를 반복할 수 있음
      */
     fun reset() = viewModelScope.launch {
         _uiState.update { state ->
 
-            if (state.isReverted) {
+            if (state.isRestored) {
                 state.copy(
-                    isReverted = false,
+                    isRestored = false,
                     isGray = state.cachedIsGray,
                     isBright = state.cachedIsBright,
                     colorFilter = state.cachedColorFilter,
@@ -97,7 +97,7 @@ class MainViewModel : ViewModel() {
                 )
             } else {
                 state.copy(
-                    isReverted = true,
+                    isRestored = true,
                     isGray = false,
                     isBright = false,
                     colorFilter = colorMatrix(ColorMatrix()),
@@ -163,7 +163,7 @@ data class MainComposeUiState(
     val drawable: Int,
     val isGray: Boolean,
     val isBright: Boolean,
-    val isReverted: Boolean,
+    val isRestored: Boolean,
     val grayScaleColorMatrix: ColorMatrix,
     val brightnessColorMatrix: ColorMatrix,
     val colorFilter: ColorFilter,
@@ -176,7 +176,7 @@ data class MainComposeUiState(
             drawable = R.drawable.ic_launcher_background,
             isGray = false,
             isBright = false,
-            isReverted = false,
+            isRestored = false,
             grayScaleColorMatrix = ColorMatrix(),
             brightnessColorMatrix = ColorMatrix(),
             colorFilter = colorMatrix(ColorMatrix()),

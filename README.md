@@ -22,7 +22,7 @@
 data class MainUiState(
     val isGray: Boolean,
     val isBright: Boolean,
-    val isReverted: Boolean,
+    val isRestored: Boolean,
     val grayScaleColorMatrix: ColorMatrix,
     val brightnessColorMatrix: ColorMatrix,
     val colorFilter: ColorFilter,
@@ -48,7 +48,7 @@ data class MainUiState(
   - 밝기 전용 `ColorMatrix`의 Offset, Scale RGB 값을 변경하여 밝기 조절
   - 어두운 영역은 더 어둡게, 밝은 영역은 더 밝게 되면서 대비를 확대
 
-### 4. 되돌리기 / 복원하기 기능 (이미지 비교만을 위한 목적)
+### 4. 되돌리기 (이미지 비교만을 위한 목적)
 - **되돌리기**
   - 이전 이미지 상태로 복원
   - 흑백/밝기 버튼 모두 비활성화
@@ -171,7 +171,7 @@ imageView.colorFilter = ColorMatrixColorFilter(cm2)
    - 현재까지 다운로드된 필터와 기본 필터만 사용하도록 예외 처리를 해야 할 수도 있습니다.
 
 4. **백그라운드/포그라운드 다운로드**
-   - 다운로드 도중 앱을 백그라운드로 전환되어도 작업이 유지될 수 있도록 **Foreground Service** 를 활용해야 합니다.
+   - 다운로드 도중 앱을 백그라운드로 전환 시에도 현재 다운로드 상태를 보여주기 위해  **Foreground Service** 를 활용해야 합니다.
    - 신규 필터를 다운로드 받기 위해서 주기적으로 **WorkManager**를 활용하는 것도 방법이 될 수 있다고 생각합니다
 
 5. **부분 다운로드 및 캐싱**

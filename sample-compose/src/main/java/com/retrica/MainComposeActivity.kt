@@ -67,10 +67,10 @@ class MainComposeActivity : ComponentActivity() {
                         ) {
                             Button(
                                 modifier = Modifier.weight(1f),
-                                enabled = !state.isReverted,
+                                enabled = !state.isRestored,
                                 onClick = viewModel::toggleGrayScale
                             ) {
-                                if (state.isReverted) {
+                                if (state.isRestored) {
                                     Text(
                                         fontSize = 10.sp,
                                         text = stringResource(if(state.cachedIsGray) R.string.gray_remove else R.string.gray_apply)
@@ -85,10 +85,10 @@ class MainComposeActivity : ComponentActivity() {
                             }
                             Button(
                                 modifier = Modifier.weight(1f),
-                                enabled = !state.isReverted,
+                                enabled = !state.isRestored,
                                 onClick = viewModel::toggleBrightness
                             ) {
-                                if (state.isReverted) {
+                                if (state.isRestored) {
                                     Text(
                                         fontSize = 10.sp,
                                         text = stringResource(if (state.cachedIsBright)R.string.bright_decrease else R.string.bright_increase)
@@ -107,7 +107,7 @@ class MainComposeActivity : ComponentActivity() {
                             ) {
                                 Text(
                                     fontSize = 10.sp,
-                                    text = if (state.isReverted) "복원하기" else "되돌리기"
+                                    text = if (state.isRestored) "복원하기" else "되돌리기"
                                 )
 
                             }

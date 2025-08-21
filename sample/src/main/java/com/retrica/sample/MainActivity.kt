@@ -68,25 +68,25 @@ class MainActivity : AppCompatActivity() {
     fun render(state: MainUiState) = with(binding) {
         val ctx = root.context
 
-        // 현재 적용된 필터 상태 계산 (isReverted에 따라 실제 적용 상태 결정)
-        val isGrayNow = if (state.isReverted) state.cachedIsGray else state.isGray
-        val isBrightNow = if (state.isReverted) state.cachedIsBright else state.isBright
+        // 현재 적용된 필터 상태 계산 (isRestored에 따라 실제 적용 상태 결정)
+        val isGrayNow = if (state.isRestored) state.cachedIsGray else state.isGray
+        val isBrightNow = if (state.isRestored) state.cachedIsBright else state.isBright
 
         // Gray 버튼 상태 및 텍스트 변경
-        btnGray.isEnabled = !state.isReverted
+        btnGray.isEnabled = !state.isRestored
         btnGray.text = ctx.getString(
             if (isGrayNow) R.string.gray_remove else R.string.gray_apply
         )
 
         // Bright 버튼 상태 및 텍스트 변경
-        btnBright.isEnabled = !state.isReverted
+        btnBright.isEnabled = !state.isRestored
         btnBright.text = ctx.getString(
             if (isBrightNow) R.string.bright_decrease else R.string.bright_increase
         )
 
         // Reset 버튼 텍스트 변경
         btnReset.text = ctx.getString(
-            if (state.isReverted) R.string.reset_restore else R.string.reset_revert
+            if (state.isRestored) R.string.reset_restore else R.string.reset_revert
         )
 
         // Image에 ColorFilter 필터 적용
