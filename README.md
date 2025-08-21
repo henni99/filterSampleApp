@@ -199,13 +199,13 @@ imageView.colorFilter = ColorMatrixColorFilter(cm2)
 
 | | | | |
 |---|---|---|---|
-| <video src="https://github.com/user-attachments/assets/4aefb067-7d75-467f-8602-408af395bb1e" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/af273f84-d5a0-4e14-bef9-f80b1807af14" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/f6ec828a-37ea-4b59-8cc1-64f098ddbff1" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/231eab15-2fab-420a-a788-18390340da1e" controls height="320"></video> |
-| <video src="https://github.com/user-attachments/assets/853a0b7f-d7fd-4948-abe0-24189054baf0" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/28b690a3-b16e-494a-8688-60822e42e9f9" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/d2b8ee3d-6818-411d-b247-fc5358ad85c2" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/408444eb-7e70-4985-8fb9-0efffb60a168" controls height="320"></video> |
-| <video src="https://github.com/user-attachments/assets/006ec1b4-0bae-4a17-8714-69bc546380ec" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/80a52366-8ff9-4bad-a5c9-2da53ca53fe0" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/788566ee-5cf2-472c-812c-7a41768fca83" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/2165dc48-ce8b-4051-beca-184cbfba09e9" controls height="320"></video> |
-| <video src="https://github.com/user-attachments/assets/471b6f34-1309-4d96-aae3-8989a9fcacaa" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/cf1b0f22-9191-4632-a5b2-4ad21be96ed6" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/c35f4f62-bb75-49f4-95e8-1014cc3f91a5" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/bc5ae96f-30b8-40d2-a10c-b747209993d0" controls height="320"></video> |
-
+| <video src="https://github.com/user-attachments/assets/0882aadc-c237-4536-b474-3996cdb1d30e" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/2c82cad5-c374-4b3a-80c0-dd7936ed3779" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/0c95f869-5bc8-4aaa-94e8-a8a4b5a90818" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/671edb6c-9d84-4818-a9e6-5aa2265321e4" controls height="320"></video> |
+| <video src="https://github.com/user-attachments/assets/ea3d8d05-2789-4558-a05e-47c1c184f848" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/584ffdc5-75b5-4f2f-9618-50c6a1e71f04" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/72caa36b-f26c-4420-af5b-561b39816b4b" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/8cd849f6-fb2b-4865-a656-4d1143a599f3" controls height="320"></video> |
+| <video src="https://github.com/user-attachments/assets/6b19076c-2704-469e-a268-9ade6add7693" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/8dc58888-410b-447e-bb1a-89594d24a264" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/c82f02e5-d30e-49f9-b73f-362664ff7618" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/4b1bcca4-fd4d-4fbe-9e84-7084db4472f7" controls height="320"></video> |
+| <video src="https://github.com/user-attachments/assets/68dd9831-6cfa-4a04-8dc0-88579631ea75" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/d97ddade-02a7-494e-b9e5-d8aa869d39be" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/0a2b24ed-be7c-4c72-9659-e3f79533b0f6" controls height="320"></video> | <video src="https://github.com/user-attachments/assets/0b4dbbf7-5ebc-4f9b-9735-7010ef7a3522" controls height="320"></video> |
 
 ---
+
 
 ## 작업 로그 (12시간 30분 + 1시간 30분)
 
@@ -227,4 +227,8 @@ imageView.colorFilter = ColorMatrixColorFilter(cm2)
   - ColorMatrix -> ColorFilter 변경
   - 밝기 조절 방식 변경
   - README 수정
-  
+
+### 2025.08.20
+- **22:30 - 23:00 (30분)**  
+  - 변수 명 수정
+  - 버전별 테스트 및 재업로드
